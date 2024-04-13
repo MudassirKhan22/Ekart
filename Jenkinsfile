@@ -50,7 +50,6 @@ pipeline {
             }
         }
         
-        
         stage('Deploy To Nexus') {
             steps {
                 withMaven(globalMavenSettingsConfig: 'global-maven', jdk: 'jdk17', maven: 'maven3', mavenSettingsConfig: '', traceability: true) {
@@ -63,8 +62,8 @@ pipeline {
         stage('Docker Build & Tag image') {
             steps {
                 script{
-                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "sudo docker build -t mudassir12/ekart:latest -f docker/Dockerfile ."
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker'){
+                        sh "docker build -t mudassir12/ekart:latest -f docker/Dockerfile ."
                     }
                 }
             }
@@ -78,7 +77,11 @@ pipeline {
         
         stage('Docker Push') {
             steps {
-                sh "sudo docker push mudassir12/ekart:latest"
+                script{
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker'){
+                        sh "docker push mudassir12/ekart:latest"
+                    }
+                }
             }
         }
         
